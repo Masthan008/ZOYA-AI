@@ -30,7 +30,7 @@ engine = None
 is_speaking = False
 
 
-def clean_text_for_speech(text):
+def clean_text(text):
     """
     Clean text specifically for speech output
     
@@ -45,7 +45,7 @@ def clean_text_for_speech(text):
     
     # Remove special characters but keep spaces and basic punctuation
     # Include Unicode ranges for Indian languages (Telugu, Hindi, Tamil)
-    cleaned = re.sub(r'[^\w\s.,!?;:()\u0C00-\u0C7F\u0900-\u097F\u0B80-\u0BFF]', '', text)
+    cleaned = re.sub(r'[^A-Za-z0-9\u0C00-\u0C7F\u0900-\u097F\u0B80-\u0BFF\s.,!?;:]', '', text)
     
     # Remove extra whitespace
     cleaned = re.sub(r'\s+', ' ', cleaned).strip()
@@ -93,20 +93,23 @@ def speak_with_pyttsx3(text, language="en"):
     engine = init_tts_engine()
     
     # Clean text for speech
-    clean_text = clean_text_for_speech(text)
+    clean_text_content = clean_text(text)
+    
+    if not clean_text_content.strip():
+        return
     
     def speak():
         global is_speaking
         is_speaking = True
         try:
-            engine.say(clean_text)
+            engine.say(clean_text_content)
             engine.runAndWait()
         except RuntimeError as e:
             if "run loop already started" in str(e):
                 # Try to end the loop and restart
                 try:
                     engine.endLoop()
-                    engine.say(clean_text)
+                    engine.say(clean_text_content)
                     engine.runAndWait()
                 except:
                     pass
@@ -136,22 +139,26 @@ def speak_with_gtts(text, language="en"):
         raise Exception("gTTS or pygame not available")
         
     # Clean text for speech
-    clean_text = clean_text_for_speech(text)
+    clean_text_content = clean_text(text)
+    
+    if not clean_text_content.strip():
+        return
+        
+    filename = "zoya_output.mp3"
     
     try:
         is_speaking = True
-        tts = gTTS(text=clean_text, lang=language, slow=False, lang_check=False)
-        filename = "temp_speech.mp3"
+        tts = gTTS(text=clean_text_content, lang=language, slow=False, lang_check=False)
         tts.save(filename)
         
-        # Initialize pygame mixer
+        # Initialize and play sound
         pygame.mixer.init()
         pygame.mixer.music.load(filename)
         pygame.mixer.music.play()
         
-        # Wait for speech to complete or be interrupted
+        # Wait until speech finishes or is interrupted
         while pygame.mixer.music.get_busy() and not stop_flag.is_set():
-            time.sleep(0.1)
+            pygame.time.Clock().tick(5)  # No spam prints
         
         # Stop if interrupted
         if stop_flag.is_set():
@@ -159,12 +166,22 @@ def speak_with_gtts(text, language="en"):
             stop_flag.clear()
         
         # Clean up
+        pygame.mixer.music.stop()
         pygame.mixer.quit()
         if os.path.exists(filename):
             os.remove(filename)
             
     except Exception as e:
-        print(f"gTTS error: {e}")
+        print(f"[Speech Error]: {e}")
+        try:
+            pygame.mixer.quit()
+        except:
+            pass
+        if os.path.exists(filename):
+            try:
+                os.remove(filename)
+            except:
+                pass
         raise
     finally:
         is_speaking = False
@@ -221,4 +238,5 @@ def stop_speaking():
         except:
             pass
     
+    # Only print once when stopping
     print("Speech stopped.")
