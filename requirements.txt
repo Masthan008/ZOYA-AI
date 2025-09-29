@@ -1,0 +1,10 @@
+openai
+duckduckgo-search
+pyttsx3
+speechrecognition
+pyaudio
+gtts
+translate
+playsound
+keyboard
+python-dotenv
