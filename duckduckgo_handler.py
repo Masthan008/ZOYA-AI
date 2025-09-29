@@ -13,9 +13,9 @@ except ImportError:
     DDGS_AVAILABLE = False
 
 
-def search_web(query, max_results=3):
+def search_web(query, max_results=2):
     """
-    Search the web using DuckDuckGo and return summarized results
+    Search DuckDuckGo and return short, readable summaries.
     
     Args:
         query (str): Search query
@@ -29,8 +29,21 @@ def search_web(query, max_results=3):
         
     try:
         with DDGS() as ddgs:
-            results = [r["body"] for r in ddgs.text(query, max_results=max_results)]
-            combined_result = "\n".join(results) if results else ""
+            results = list(ddgs.text(query, max_results=max_results))
+            
+            if not results:
+                return "I couldn't find anything for that."
+
+            # Extract short snippets
+            clean_results = []
+            for r in results:
+                snippet = r.get("body", "")
+                if len(snippet.split()) > 30:  # shorten long snippets
+                    snippet = " ".join(snippet.split()[:30]) + "..."
+                clean_results.append(snippet)
+
+            # Combine top results
+            combined_result = " ".join(clean_results)
             
         if not combined_result:
             return None
@@ -42,4 +55,4 @@ def search_web(query, max_results=3):
         
     except Exception as e:
         print(f"Web search error: {e}")
-        return None
+        return "Something went wrong during live search."

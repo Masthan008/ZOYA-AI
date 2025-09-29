@@ -139,8 +139,18 @@ def main():
 
 def start_text_mode(selected_language, selected_language_name):
     """Start text mode conversation loop"""
-    print(f"\nText Mode - {selected_language_name}")
+    print(f"\n🧠 Zoya Mode: Text (AI) - {selected_language_name}")
     print("Type 'exit' to quit, or 'stop' to reset conversation.\n")
+    
+    # 🧍 Personal Knowledge Base (Zoya's built-in facts)
+    personal_qa = {
+        "what is your name": "My name is Zoya, your personal AI assistant.",
+        "who are you": "I'm Zoya, your AI assistant built to help you.",
+        "who created you": "I was created by Masthan Valli — my brilliant developer.",
+        "who made you": "Masthan Valli built me using Python and AI.",
+        "who is masthan valli": "Masthan Valli is my creator — a talented developer.",
+        "who developed you": "Masthan Valli developed me with love and code.",
+    }
     
     while True:
         try:
@@ -159,24 +169,17 @@ def start_text_mode(selected_language, selected_language_name):
 
             # 🧠 Stop = reset conversation
             if query.lower() == "stop":
-                print("Zoya: Okay, I've reset our conversation. Let's start fresh!")
-                speak_text("Okay, I've reset our conversation. Let's start fresh!", selected_language)
+                print("🧠 Zoya: Conversation reset. Let's start fresh.")
+                speak_text("Conversation reset. Let's start fresh.", selected_language)
                 clear_memory()
                 continue
 
             print(f"You said: {query}")
 
-            # 💬 Predefined responses (custom personality)
-            smalltalk = {
-                "what is your name": "My name is Zoya, your personal AI assistant.",
-                "who are you": "I'm Zoya, your friendly AI assistant.",
-                "who created you": "I was created by Masthan Valli — my brilliant developer.",
-                "who made you": "I was built by Masthan Valli.",
-                "who is masthan valli": "Masthan Valli is my creator and the one who designed my intelligence.",
-            }
-
-            if query.lower() in smalltalk:
-                response = smalltalk[query.lower()]
+            # 🧍 Personal Knowledge Base (Zoya's built-in facts)
+            query_lower = query.lower().strip(" ?")
+            if query_lower in personal_qa:
+                response = personal_qa[query_lower]
             else:
                 # Check if query is general knowledge or needs AI
                 if is_general_knowledge_query(query):
@@ -235,8 +238,18 @@ def start_voice_mode(selected_language, selected_language_name):
         print("Voice mode not available due to missing dependencies.")
         return
         
-    print(f"\nVoice Mode - {selected_language_name}")
+    print(f"\n🎙️ Zoya Mode: Voice (AI) - {selected_language_name}")
     print("Say 'exit' to quit, or 'stop' to reset conversation.\n")
+    
+    # 🧍 Personal Knowledge Base (Zoya's built-in facts)
+    personal_qa = {
+        "what is your name": "My name is Zoya, your personal AI assistant.",
+        "who are you": "I'm Zoya, your AI assistant built to help you.",
+        "who created you": "I was created by Masthan Valli — my brilliant developer.",
+        "who made you": "Masthan Valli built me using Python and AI.",
+        "who is masthan valli": "Masthan Valli is my creator — a talented developer.",
+        "who developed you": "Masthan Valli developed me with love and code.",
+    }
     
     while True:
         try:
@@ -257,24 +270,17 @@ def start_voice_mode(selected_language, selected_language_name):
                 
             # 🧠 Stop = reset conversation
             if query.lower() == "stop":
-                print("Zoya: Okay, I've reset our conversation. Let's start fresh!")
-                speak_text("Okay, I've reset our conversation. Let's start fresh!", selected_language)
+                print("🧠 Zoya: Conversation reset. Let's start fresh.")
+                speak_text("Conversation reset. Let's start fresh.", selected_language)
                 clear_memory()
                 continue
 
             print(f"You said: {query}")
 
-            # 💬 Predefined responses (custom personality)
-            smalltalk = {
-                "what is your name": "My name is Zoya, your personal AI assistant.",
-                "who are you": "I'm Zoya, your friendly AI assistant.",
-                "who created you": "I was created by Masthan Valli — my brilliant developer.",
-                "who made you": "I was built by Masthan Valli.",
-                "who is masthan valli": "Masthan Valli is my creator and the one who designed my intelligence.",
-            }
-
-            if query.lower() in smalltalk:
-                response = smalltalk[query.lower()]
+            # 🧍 Personal Knowledge Base (Zoya's built-in facts)
+            query_lower = query.lower().strip(" ?")
+            if query_lower in personal_qa:
+                response = personal_qa[query_lower]
             else:
                 # Check if query is general knowledge or needs AI
                 if is_general_knowledge_query(query):
@@ -329,7 +335,7 @@ def start_voice_mode(selected_language, selected_language_name):
 
 def start_live_search_mode(selected_language, selected_language_name):
     """Start live search mode using DuckDuckGo"""
-    print(f"\n🌐 Live Search Mode Activated (DuckDuckGo) - {selected_language_name}")
+    print(f"\n🌐 Zoya Mode: Live (DuckDuckGo) - {selected_language_name}")
     print("Type 'exit' anytime to quit.\n")
     
     while True:

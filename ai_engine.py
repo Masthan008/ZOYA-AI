@@ -30,12 +30,16 @@ language_names = {
 
 # 🧠 Persistent memory (list of messages)
 chat_memory = [
-    {"role": "system", "content": (
-        "You are Zoya, a kind and conversational female AI assistant. "
-        "You must always speak naturally and briefly. "
-        "Do not return dictionary or forum-style text. "
-        "Keep answers under 3 lines unless asked for detail."
-    )}
+    {
+        "role": "system",
+        "content": (
+            "You are Zoya, a smart and kind female AI assistant created by Masthan Valli. "
+            "Always speak in a friendly, conversational tone. "
+            "Keep answers short (under 3 lines) unless asked for details. "
+            "Never include definitions, grammar tips, dictionary entries, or code unless requested. "
+            "When asked personal questions, reply naturally as Zoya."
+        )
+    }
 ]
 
 
@@ -69,10 +73,11 @@ def get_ai_response(query, language="en"):
 
         # Update system message with language context
         system_message = (
-            "You are Zoya, a kind and conversational female AI assistant. "
-            f"Respond naturally and briefly in {language_name}. "
-            "Do not return dictionary or forum-style text. "
-            "Keep answers under 3 lines unless asked for detail."
+            "You are Zoya, a smart and kind female AI assistant created by Masthan Valli. "
+            f"Always speak in a friendly, conversational tone in {language_name}. "
+            "Keep answers short (under 3 lines) unless asked for details. "
+            "Never include definitions, grammar tips, dictionary entries, or code unless requested. "
+            "When asked personal questions, reply naturally as Zoya."
         )
         
         # Find and update the system message in chat_memory
@@ -94,6 +99,10 @@ def get_ai_response(query, language="en"):
             result = response.json()
             ai_reply = result["choices"][0]["message"]["content"].strip()
 
+            # Remove long irrelevant text
+            if len(ai_reply.split()) > 80:
+                ai_reply = " ".join(ai_reply.split()[:80]) + "..."
+
             # 🧠 Save AI response in memory
             chat_memory.append({"role": "assistant", "content": ai_reply})
 
@@ -113,10 +122,11 @@ def clear_memory():
     system_msg = chat_memory[0] if chat_memory and chat_memory[0]["role"] == "system" else {
         "role": "system", 
         "content": (
-            "You are Zoya, a kind and conversational female AI assistant. "
-            "You must always speak naturally and briefly. "
-            "Do not return dictionary or forum-style text. "
-            "Keep answers under 3 lines unless asked for detail."
+            "You are Zoya, a smart and kind female AI assistant created by Masthan Valli. "
+            "Always speak in a friendly, conversational tone. "
+            "Keep answers short (under 3 lines) unless asked for details. "
+            "Never include definitions, grammar tips, dictionary entries, or code unless requested. "
+            "When asked personal questions, reply naturally as Zoya."
         )
     }
     chat_memory = [system_msg]
