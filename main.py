@@ -139,58 +139,70 @@ def start_text_mode(selected_language, selected_language_name):
     print("Type 'exit' anytime to quit.\n")
     
     while True:
-        # Reset stop flag at the beginning of each conversation
-        reset_stop_flag()
-        
-        query = input("Enter your query: ").strip()
-        if query.lower() in ["exit", "quit", "bye"]:
-            print("Zoya: Goodbye! 👋")
-            speak_text("Goodbye! Have a nice day!", selected_language)
-            break
-
-        if not query:
-            continue
-
-        print(f"You said: {query}")
-
-        # Check if query is general knowledge or needs AI
-        if is_general_knowledge_query(query):
-            # Search web for general knowledge
-            search_result = search_web(query)
-            response = search_result if search_result else "I couldn't find information on that topic."
+        try:
+            # Reset stop flag at the beginning of each conversation
+            reset_stop_flag()
             
-            # Log the interaction with search result
-            if LOGGER_AVAILABLE:
-                log_interaction(user_query=query, ai_reply=response, mode="text", search_result=search_result)
-        else:
-            # Use AI for complex queries
-            if OPENAI_AVAILABLE:
-                ai_response = get_ai_response(query, selected_language)
-                response = ai_response if ai_response else "I couldn't process that request."
-                
-                # Log the interaction
-                if LOGGER_AVAILABLE:
-                    log_interaction(user_query=query, ai_reply=response, mode="text")
-            else:
-                # Fallback to web search if AI is not available
+            query = input("Enter your query: ").strip()
+            if query.lower() in ["exit", "quit", "bye"]:
+                print("Zoya: Goodbye! 👋")
+                speak_text("Goodbye! Have a nice day!", selected_language)
+                break
+
+            if not query:
+                continue
+
+            print(f"You said: {query}")
+
+            # Check if query is general knowledge or needs AI
+            if is_general_knowledge_query(query):
+                # Search web for general knowledge
                 search_result = search_web(query)
                 response = search_result if search_result else "I couldn't find information on that topic."
                 
                 # Log the interaction with search result
                 if LOGGER_AVAILABLE:
                     log_interaction(user_query=query, ai_reply=response, mode="text", search_result=search_result)
+            else:
+                # Use AI for complex queries
+                if OPENAI_AVAILABLE:
+                    ai_response = get_ai_response(query, selected_language)
+                    response = ai_response if ai_response else "I couldn't process that request."
+                    
+                    # Log the interaction
+                    if LOGGER_AVAILABLE:
+                        log_interaction(user_query=query, ai_reply=response, mode="text")
+                else:
+                    # Fallback to web search if AI is not available
+                    search_result = search_web(query)
+                    response = search_result if search_result else "I couldn't find information on that topic."
+                    
+                    # Log the interaction with search result
+                    if LOGGER_AVAILABLE:
+                        log_interaction(user_query=query, ai_reply=response, mode="text", search_result=search_result)
 
-        # Translate response if needed
-        if selected_language != "en" and TRANSLATOR_AVAILABLE:
-            print(f"Translating response to {selected_language_name}...")
-            response = translate_text(response, selected_language)
+            # Translate response if needed
+            if selected_language != "en" and TRANSLATOR_AVAILABLE:
+                print(f"Translating response to {selected_language_name}...")
+                response = translate_text(response, selected_language)
 
-        # Clean response text
-        clean_response = clean_text(response)
+            # Clean response text
+            clean_response = clean_text(response)
 
-        # Speak the response (only once)
-        print(f"Zoya: {clean_response}")
-        speak_text(clean_response, selected_language)
+            # Speak the response (only once)
+            print(f"Zoya: {clean_response}")
+            speak_text(clean_response, selected_language)
+            
+            # Small delay to ensure speech finishes before next prompt
+            time.sleep(0.5)
+            
+        except KeyboardInterrupt:
+            print("\nZoya: Goodbye! 👋")
+            speak_text("Goodbye! Have a nice day!", selected_language)
+            break
+        except Exception as e:
+            print(f"An error occurred: {e}")
+            print("Continuing to next query...")
 
 
 def start_voice_mode(selected_language, selected_language_name):
@@ -203,64 +215,76 @@ def start_voice_mode(selected_language, selected_language_name):
     print("Say 'exit' to quit.\n")
     
     while True:
-        # Reset stop flag at the beginning of each conversation
-        reset_stop_flag()
-        
-        print("Listening... Say something (say 'stop' to interrupt)")
-        query = get_voice_input(selected_language)
-        
-        if not query:
-            continue
+        try:
+            # Reset stop flag at the beginning of each conversation
+            reset_stop_flag()
             
-        if query.lower() in ["exit", "quit", "bye"]:
-            print("Zoya: Goodbye! 👋")
-            speak_text("Goodbye! Have a nice day!", selected_language)
-            break
+            print("Listening... Say something (say 'stop' to interrupt)")
+            query = get_voice_input(selected_language)
             
-        if query.lower() == "stop":
-            stop_speaking()
-            continue
-
-        print(f"You said: {query}")
-
-        # Check if query is general knowledge or needs AI
-        if is_general_knowledge_query(query):
-            # Search web for general knowledge
-            search_result = search_web(query)
-            response = search_result if search_result else "I couldn't find information on that topic."
-            
-            # Log the interaction with search result
-            if LOGGER_AVAILABLE:
-                log_interaction(user_query=query, ai_reply=response, mode="voice", search_result=search_result)
-        else:
-            # Use AI for complex queries
-            if OPENAI_AVAILABLE:
-                ai_response = get_ai_response(query, selected_language)
-                response = ai_response if ai_response else "I couldn't process that request."
+            if not query:
+                continue
                 
-                # Log the interaction
-                if LOGGER_AVAILABLE:
-                    log_interaction(user_query=query, ai_reply=response, mode="voice")
-            else:
-                # Fallback to web search if AI is not available
+            if query.lower() in ["exit", "quit", "bye"]:
+                print("Zoya: Goodbye! 👋")
+                speak_text("Goodbye! Have a nice day!", selected_language)
+                break
+                
+            if query.lower() == "stop":
+                stop_speaking()
+                continue
+
+            print(f"You said: {query}")
+
+            # Check if query is general knowledge or needs AI
+            if is_general_knowledge_query(query):
+                # Search web for general knowledge
                 search_result = search_web(query)
                 response = search_result if search_result else "I couldn't find information on that topic."
                 
                 # Log the interaction with search result
                 if LOGGER_AVAILABLE:
                     log_interaction(user_query=query, ai_reply=response, mode="voice", search_result=search_result)
+            else:
+                # Use AI for complex queries
+                if OPENAI_AVAILABLE:
+                    ai_response = get_ai_response(query, selected_language)
+                    response = ai_response if ai_response else "I couldn't process that request."
+                    
+                    # Log the interaction
+                    if LOGGER_AVAILABLE:
+                        log_interaction(user_query=query, ai_reply=response, mode="voice")
+                else:
+                # Fallback to web search if AI is not available
+                    search_result = search_web(query)
+                    response = search_result if search_result else "I couldn't find information on that topic."
+                    
+                    # Log the interaction with search result
+                    if LOGGER_AVAILABLE:
+                        log_interaction(user_query=query, ai_reply=response, mode="voice", search_result=search_result)
 
-        # Translate response if needed
-        if selected_language != "en" and TRANSLATOR_AVAILABLE:
-            print(f"Translating response to {selected_language_name}...")
-            response = translate_text(response, selected_language)
+            # Translate response if needed
+            if selected_language != "en" and TRANSLATOR_AVAILABLE:
+                print(f"Translating response to {selected_language_name}...")
+                response = translate_text(response, selected_language)
 
-        # Clean response text
-        clean_response = clean_text(response)
+            # Clean response text
+            clean_response = clean_text(response)
 
-        # Speak the response (only once)
-        print(f"Zoya: {clean_response}")
-        speak_text(clean_response, selected_language)
+            # Speak the response (only once)
+            print(f"Zoya: {clean_response}")
+            speak_text(clean_response, selected_language)
+            
+            # Small delay to ensure speech finishes before next prompt
+            time.sleep(0.5)
+            
+        except KeyboardInterrupt:
+            print("\nZoya: Goodbye! 👋")
+            speak_text("Goodbye! Have a nice day!", selected_language)
+            break
+        except Exception as e:
+            print(f"An error occurred: {e}")
+            print("Continuing to next query...")
 
 
 def is_general_knowledge_query(query):
