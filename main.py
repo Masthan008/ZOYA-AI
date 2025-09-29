@@ -26,7 +26,12 @@ except ImportError as e:
         print("Speech stopped.")
 
 try:
-    from ai_engine import get_ai_response, clear_memory, OPENAI_AVAILABLE
+    from ai_engine import get_ai_response, clear_memory
+    # Check if OPENAI_AVAILABLE is defined, if not define it
+    try:
+        from ai_engine import OPENAI_AVAILABLE
+    except ImportError:
+        OPENAI_AVAILABLE = False
 except ImportError as e:
     print(f"❌ Error loading ai_engine: {e}")
     OPENAI_AVAILABLE = False

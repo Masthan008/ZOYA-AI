@@ -15,6 +15,9 @@ API_KEY = os.getenv("OPENROUTER_API_KEY")
 API_URL = "https://openrouter.ai/api/v1/chat/completions"
 MODEL_NAME = os.getenv("OPENROUTER_MODEL", "x-ai/grok-4-fast:free")
 
+# Global flag for AI availability
+OPENAI_AVAILABLE = True if API_KEY else False
+
 # Language names for prompt
 language_names = {
     "en": "English",
