@@ -30,7 +30,10 @@ A multilingual, voice-based & text-based AI assistant similar to Jarvis, built w
 
 ## Installation
 
-1. Clone the repository
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/Masthan008/ZOYA-AI.git
+   ```
 2. Install dependencies:
    ```bash
    pip install -r requirements.txt
@@ -72,6 +75,10 @@ python main.py
 - Tamil (ta)
 - Spanish (es)
 - French (fr)
+
+## GitHub Repository
+
+The project is hosted on GitHub: [https://github.com/Masthan008/ZOYA-AI](https://github.com/Masthan008/ZOYA-AI)
 
 ## Future Enhancements
 
