@@ -26,12 +26,14 @@ except ImportError:
         print("Speech stopped.")
 
 try:
-    from ai_engine import get_ai_response, OPENAI_AVAILABLE
+    from ai_engine import get_ai_response, clear_memory, OPENAI_AVAILABLE
 except ImportError:
     print("Warning: ai_engine module not available.")
     OPENAI_AVAILABLE = False
     def get_ai_response(query, language="en"):
         return None
+    def clear_memory():
+        pass
 
 try:
     from duckduckgo_handler import search_web, DDGS_AVAILABLE
@@ -51,6 +53,17 @@ except ImportError as e:
     TRANSLATOR_AVAILABLE = False
     def translate_text(text, target_language):
         return text
+
+# Import logger module
+try:
+    from logger import log_interaction
+    LOGGER_AVAILABLE = True
+    print("Logger module imported successfully.")
+except ImportError as e:
+    print(f"Warning: logger module not available. Error: {e}")
+    LOGGER_AVAILABLE = False
+    def log_interaction(user_query, ai_reply, mode="text", search_result=None):
+        pass
 
 from utils import clean_text, stop_flag, reset_stop_flag
 
@@ -95,15 +108,19 @@ def main():
         print("\nSelect mode:")
         print("1. Voice Mode")
         print("2. Text Mode")
-        print("3. Exit")
+        print("3. Clear Memory")
+        print("4. Exit")
         
-        mode = input("Enter your choice (1-3): ")
+        mode = input("Enter your choice (1-4): ")
         
         if mode == "1":
             start_voice_mode(selected_language, selected_language_name)
         elif mode == "2":
             start_text_mode(selected_language, selected_language_name)
         elif mode == "3":
+            clear_memory()
+            print("Memory cleared!")
+        elif mode == "4":
             print("Zoya: Goodbye! Exiting program.")
             speak_text("Goodbye! Exiting now.", selected_language)
             break
@@ -136,15 +153,27 @@ def start_text_mode(selected_language, selected_language_name):
             # Search web for general knowledge
             search_result = search_web(query)
             response = search_result if search_result else "I couldn't find information on that topic."
+            
+            # Log the interaction with search result
+            if LOGGER_AVAILABLE:
+                log_interaction(user_query=query, ai_reply=response, mode="text", search_result=search_result)
         else:
             # Use AI for complex queries
             if OPENAI_AVAILABLE:
                 ai_response = get_ai_response(query, selected_language)
                 response = ai_response if ai_response else "I couldn't process that request."
+                
+                # Log the interaction
+                if LOGGER_AVAILABLE:
+                    log_interaction(user_query=query, ai_reply=response, mode="text")
             else:
                 # Fallback to web search if AI is not available
                 search_result = search_web(query)
                 response = search_result if search_result else "I couldn't find information on that topic."
+                
+                # Log the interaction with search result
+                if LOGGER_AVAILABLE:
+                    log_interaction(user_query=query, ai_reply=response, mode="text", search_result=search_result)
 
         # Translate response if needed
         if selected_language != "en" and TRANSLATOR_AVAILABLE:
@@ -194,15 +223,27 @@ def start_voice_mode(selected_language, selected_language_name):
             # Search web for general knowledge
             search_result = search_web(query)
             response = search_result if search_result else "I couldn't find information on that topic."
+            
+            # Log the interaction with search result
+            if LOGGER_AVAILABLE:
+                log_interaction(user_query=query, ai_reply=response, mode="voice", search_result=search_result)
         else:
             # Use AI for complex queries
             if OPENAI_AVAILABLE:
                 ai_response = get_ai_response(query, selected_language)
                 response = ai_response if ai_response else "I couldn't process that request."
+                
+                # Log the interaction
+                if LOGGER_AVAILABLE:
+                    log_interaction(user_query=query, ai_reply=response, mode="voice")
             else:
                 # Fallback to web search if AI is not available
                 search_result = search_web(query)
                 response = search_result if search_result else "I couldn't find information on that topic."
+                
+                # Log the interaction with search result
+                if LOGGER_AVAILABLE:
+                    log_interaction(user_query=query, ai_reply=response, mode="voice", search_result=search_result)
 
         # Translate response if needed
         if selected_language != "en" and TRANSLATOR_AVAILABLE:

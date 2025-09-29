@@ -25,10 +25,15 @@ language_names = {
     "fr": "French"
 }
 
+# 🧠 Persistent memory (list of messages)
+chat_memory = [
+    {"role": "system", "content": "You are Zoya, a helpful AI assistant. Remember the user's previous context and respond concisely and clearly."}
+]
+
 
 def get_ai_response(query, language="en"):
     """
-    Get AI response for the given query using OpenRouter API
+    Get AI response for the given query using OpenRouter API with memory context
     
     Args:
         query (str): User's query
@@ -51,18 +56,35 @@ def get_ai_response(query, language="en"):
             "X-Title": "Zoya AI Assistant"
         }
 
+        # 🧠 Add user query to memory
+        chat_memory.append({"role": "user", "content": query})
+
+        # Update system message with language context
+        system_message = f"You are Zoya, a helpful AI assistant. Respond concisely and clearly in {language_name}. Remember the user's previous context."
+        
+        # Find and update the system message in chat_memory
+        for msg in chat_memory:
+            if msg["role"] == "system":
+                msg["content"] = system_message
+                break
+        else:
+            # If no system message found, add one
+            chat_memory.insert(0, {"role": "system", "content": system_message})
+
         data = {
             "model": MODEL_NAME,
-            "messages": [
-                {"role": "system", "content": f"You are Zoya, a helpful AI assistant. Respond concisely and clearly in {language_name}."},
-                {"role": "user", "content": query}
-            ]
+            "messages": chat_memory
         }
 
         response = requests.post(API_URL, headers=headers, json=data, timeout=30)
         if response.status_code == 200:
             result = response.json()
-            return result["choices"][0]["message"]["content"].strip()
+            ai_reply = result["choices"][0]["message"]["content"].strip()
+
+            # 🧠 Save AI response in memory
+            chat_memory.append({"role": "assistant", "content": ai_reply})
+
+            return ai_reply
         else:
             print("AI response error:", response.text)
             return "I couldn't process that request."
@@ -70,3 +92,13 @@ def get_ai_response(query, language="en"):
     except Exception as e:
         print("AI response error:", e)
         return "I couldn't process that request."
+
+
+def clear_memory():
+    """Clear the chat memory, keeping only the system message"""
+    global chat_memory
+    system_msg = chat_memory[0] if chat_memory and chat_memory[0]["role"] == "system" else {
+        "role": "system", 
+        "content": "You are Zoya, a helpful AI assistant. Remember the user's previous context and respond concisely and clearly."
+    }
+    chat_memory = [system_msg]

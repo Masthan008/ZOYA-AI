@@ -6,8 +6,9 @@ import threading
 import time
 import os
 import re
-import pygame
+import pyttsx3
 from gtts import gTTS
+import pygame
 import keyboard
 from utils import stop_flag
 
@@ -57,7 +58,7 @@ def clean_text(text):
 
 
 def init_tts_engine():
-    """Initialize the TTS engine with female voice"""
+    """Initialize the TTS engine with female voice and slower speed"""
     global engine
     if not PYTTSX3_AVAILABLE:
         return None
@@ -79,15 +80,17 @@ def init_tts_engine():
         if not female_voice_found and voices:
             engine.setProperty('voice', voices[0].id)
         
-        # Set speech rate and volume
-        engine.setProperty('rate', 200)  # Speed of speech
+        # 🐢 Slow down speed (normal is ~200, slower is ~150)
+        engine.setProperty('rate', 150)  # Slower speed for better comprehension
+        
+        # Set volume
         engine.setProperty('volume', 0.9)  # Volume level (0.0 to 1.0)
     
     return engine
 
 
 def speak_with_pyttsx3(text, language="en"):
-    """Speak text using pyttsx3"""
+    """Speak text using pyttsx3 with slower speed"""
     global engine, is_speaking
     
     if not PYTTSX3_AVAILABLE:
@@ -209,7 +212,7 @@ def speak_text(text, language="en"):
     
     print(f"Speaking in language: {language}")
     
-    # Try pyttsx3 first, fallback to gTTS
+    # Try pyttsx3 first (with slower speed), fallback to gTTS
     if PYTTSX3_AVAILABLE:
         try:
             speak_with_pyttsx3(text, language)
