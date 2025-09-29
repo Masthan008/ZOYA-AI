@@ -90,13 +90,6 @@ def main():
     
     print(f"Selected language: {selected_language_name}")
     
-    # Set up interrupt handler for text mode
-    keyboard_listener = None
-    try:
-        keyboard_listener = keyboard.on_press_key("space", lambda _: stop_speaking())
-    except Exception as e:
-        print(f"Keyboard interrupt setup failed: {e}")
-    
     # Main loop for mode selection
     while True:
         print("\nSelect mode:")
@@ -161,9 +154,8 @@ def start_text_mode(selected_language, selected_language_name):
         # Clean response text
         clean_response = clean_text(response)
 
-        # Speak the response
+        # Speak the response (only once)
         print(f"Zoya: {clean_response}")
-        print(f"Speaking in language: {selected_language}")
         speak_text(clean_response, selected_language)
 
 
@@ -220,9 +212,8 @@ def start_voice_mode(selected_language, selected_language_name):
         # Clean response text
         clean_response = clean_text(response)
 
-        # Speak the response
+        # Speak the response (only once)
         print(f"Zoya: {clean_response}")
-        print(f"Speaking in language: {selected_language}")
         speak_text(clean_response, selected_language)
 
 

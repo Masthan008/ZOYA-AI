@@ -6,6 +6,9 @@ import threading
 import time
 import os
 import re
+import pygame
+from gtts import gTTS
+import keyboard
 from utils import stop_flag
 
 # Try to import pyttsx3
@@ -144,7 +147,7 @@ def speak_with_gtts(text, language="en"):
     if not clean_text_content.strip():
         return
         
-    filename = "zoya_output.mp3"
+    filename = "zoya_tts.mp3"
     
     try:
         is_speaking = True
@@ -156,17 +159,21 @@ def speak_with_gtts(text, language="en"):
         pygame.mixer.music.load(filename)
         pygame.mixer.music.play()
         
-        # Wait until speech finishes or is interrupted
-        while pygame.mixer.music.get_busy() and not stop_flag.is_set():
-            pygame.time.Clock().tick(5)  # No spam prints
+        # Spacebar stop works only while playing
+        def monitor_stop():
+            while pygame.mixer.music.get_busy():
+                if keyboard.is_pressed("space"):
+                    pygame.mixer.music.stop()
+                    break
         
-        # Stop if interrupted
-        if stop_flag.is_set():
-            pygame.mixer.music.stop()
-            stop_flag.clear()
+        # Run stop monitor in background
+        threading.Thread(target=monitor_stop, daemon=True).start()
+        
+        # Wait until speech finishes or is interrupted
+        while pygame.mixer.music.get_busy():
+            pygame.time.Clock().tick(10)
         
         # Clean up
-        pygame.mixer.music.stop()
         pygame.mixer.quit()
         if os.path.exists(filename):
             os.remove(filename)

@@ -3,23 +3,17 @@ Handles AI responses using OpenRouter API for Zoya AI Assistant
 """
 
 import os
+import requests
 from utils import stop_flag
+from dotenv import load_dotenv
 
-# Try to import openai and dotenv
-try:
-    import openai
-    from dotenv import load_dotenv
-    load_dotenv()  # Load environment variables from .env file
-    OPENAI_AVAILABLE = True
-    
-    # Configure OpenRouter API
-    openai.api_base = "https://openrouter.ai/api/v1"
-    openai.api_key = os.getenv("OPENROUTER_API_KEY")  # Load API key from .env file
-    MODEL_NAME = os.getenv("OPENROUTER_MODEL", "x-ai/grok-4-fast:free")  # Load model from .env or use default
-except ImportError:
-    print("Warning: openai or dotenv not available. AI functionality will be disabled.")
-    OPENAI_AVAILABLE = False
-    MODEL_NAME = "x-ai/grok-4-fast:free"
+# Load environment variables
+load_dotenv()
+
+# Configure OpenRouter API
+API_KEY = os.getenv("OPENROUTER_API_KEY")
+API_URL = "https://openrouter.ai/api/v1/chat/completions"
+MODEL_NAME = os.getenv("OPENROUTER_MODEL", "x-ai/grok-4-fast:free")
 
 # Language names for prompt
 language_names = {
@@ -43,24 +37,36 @@ def get_ai_response(query, language="en"):
     Returns:
         str: AI response or None if failed
     """
-    if not OPENAI_AVAILABLE:
-        return None
+    if not API_KEY:
+        print("❌ Missing OPENROUTER_API_KEY in .env")
+        return "I couldn't process that request."
         
     language_name = language_names.get(language, "English")
         
     try:
-        response = openai.ChatCompletion.create(
-            model=MODEL_NAME,
-            messages=[
+        headers = {
+            "Authorization": f"Bearer {API_KEY}",
+            "Content-Type": "application/json",
+            "HTTP-Referer": "http://localhost",
+            "X-Title": "Zoya AI Assistant"
+        }
+
+        data = {
+            "model": MODEL_NAME,
+            "messages": [
                 {"role": "system", "content": f"You are Zoya, a helpful AI assistant. Respond concisely and clearly in {language_name}."},
                 {"role": "user", "content": query}
-            ],
-            temperature=0.7,
-            max_tokens=500
-        )
-        
-        return response.choices[0].message.content.strip()
-        
+            ]
+        }
+
+        response = requests.post(API_URL, headers=headers, json=data, timeout=30)
+        if response.status_code == 200:
+            result = response.json()
+            return result["choices"][0]["message"]["content"].strip()
+        else:
+            print("AI response error:", response.text)
+            return "I couldn't process that request."
+            
     except Exception as e:
-        print(f"AI response error: {e}")
-        return None
+        print("AI response error:", e)
+        return "I couldn't process that request."
