@@ -1,5 +1,5 @@
 openai
-duckduckgo-search
+ddgs
 pyttsx3
 speechrecognition
 pyaudio

@@ -4,12 +4,12 @@ Handles web search functionality using DuckDuckGo for Zoya AI Assistant
 
 from utils import clean_text
 
-# Try to import DDGS
+# Try to import DDGS from ddgs
 try:
-    from duckduckgo_search import DDGS
+    from ddgs import DDGS
     DDGS_AVAILABLE = True
 except ImportError:
-    print("Warning: duckduckgo-search not available. Web search will be disabled.")
+    print("Warning: ddgs not available. Web search will be disabled.")
     DDGS_AVAILABLE = False
 
 
@@ -28,18 +28,13 @@ def search_web(query, max_results=3):
         return None
         
     try:
-        ddgs = DDGS()
-        results = ddgs.text(query, max_results=max_results)
-        
-        if not results:
+        with DDGS() as ddgs:
+            results = [r["body"] for r in ddgs.text(query, max_results=max_results)]
+            combined_result = "\n".join(results) if results else ""
+            
+        if not combined_result:
             return None
             
-        # Combine the top results
-        combined_result = ""
-        for result in results:
-            if 'body' in result:
-                combined_result += result['body'] + " "
-                
         # Clean the result text
         cleaned_result = clean_text(combined_result)
         

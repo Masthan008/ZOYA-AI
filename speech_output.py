@@ -71,7 +71,8 @@ def init_tts_engine():
         # Try to find a female voice
         female_voice_found = False
         for voice in voices:
-            if "female" in voice.name.lower() or "zira" in voice.name.lower() or "catherine" in voice.name.lower():
+            name = voice.name.lower()
+            if "female" in name or "zira" in name or "heera" in name or "eva" in name:
                 engine.setProperty('voice', voice.id)
                 female_voice_found = True
                 break
@@ -80,8 +81,8 @@ def init_tts_engine():
         if not female_voice_found and voices:
             engine.setProperty('voice', voices[0].id)
         
-        # 🐢 Slow down speed (normal is ~200, slower is ~150)
-        engine.setProperty('rate', 150)  # Slower speed for better comprehension
+        # 🐢 Slow down speed (normal is ~200, slower is ~130)
+        engine.setProperty('rate', 130)  # Even slower speed for better comprehension
         
         # Set volume
         engine.setProperty('volume', 0.9)  # Volume level (0.0 to 1.0)
@@ -210,7 +211,7 @@ def speak_text(text, language="en"):
     if not text:
         return
     
-    print(f"Speaking in language: {language}")
+    print(f"🎙️ Speaking in language: {language} | Speed: Slow")
     
     # Try pyttsx3 first (with slower speed), fallback to gTTS
     if PYTTSX3_AVAILABLE:

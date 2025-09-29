@@ -10,16 +10,16 @@ import time
 # Try to import all modules
 try:
     from speech_input import get_voice_input, SR_AVAILABLE
-except ImportError:
-    print("Warning: speech_input module not available.")
+except ImportError as e:
+    print(f"❌ Error loading speech_input: {e}")
     SR_AVAILABLE = False
     def get_voice_input(language="en"):
         return None
 
 try:
     from speech_output import speak_text, stop_speaking
-except ImportError:
-    print("Warning: speech_output module not available.")
+except ImportError as e:
+    print(f"❌ Error loading speech_output: {e}")
     def speak_text(text, language="en"):
         print(f"Text output: {text}")
     def stop_speaking():
@@ -27,8 +27,8 @@ except ImportError:
 
 try:
     from ai_engine import get_ai_response, clear_memory, OPENAI_AVAILABLE
-except ImportError:
-    print("Warning: ai_engine module not available.")
+except ImportError as e:
+    print(f"❌ Error loading ai_engine: {e}")
     OPENAI_AVAILABLE = False
     def get_ai_response(query, language="en"):
         return None
@@ -37,8 +37,8 @@ except ImportError:
 
 try:
     from duckduckgo_handler import search_web, DDGS_AVAILABLE
-except ImportError:
-    print("Warning: duckduckgo_handler module not available.")
+except ImportError as e:
+    print(f"❌ Error loading duckduckgo_handler: {e}")
     DDGS_AVAILABLE = False
     def search_web(query):
         return None
@@ -49,7 +49,7 @@ try:
     TRANSLATOR_AVAILABLE = True
     print("Translator module imported successfully.")
 except ImportError as e:
-    print(f"Warning: translator module not available. Error: {e}")
+    print(f"❌ Error loading translator: {e}")
     TRANSLATOR_AVAILABLE = False
     def translate_text(text, target_language):
         return text
@@ -60,7 +60,7 @@ try:
     LOGGER_AVAILABLE = True
     print("Logger module imported successfully.")
 except ImportError as e:
-    print(f"Warning: logger module not available. Error: {e}")
+    print(f"❌ Error loading logger: {e}")
     LOGGER_AVAILABLE = False
     def log_interaction(user_query, ai_reply, mode="text", search_result=None):
         pass
