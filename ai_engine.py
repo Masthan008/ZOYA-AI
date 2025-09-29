@@ -30,7 +30,12 @@ language_names = {
 
 # 🧠 Persistent memory (list of messages)
 chat_memory = [
-    {"role": "system", "content": "You are Zoya, a helpful AI assistant. Remember the user's previous context and respond concisely and clearly."}
+    {"role": "system", "content": (
+        "You are Zoya, a kind and conversational female AI assistant. "
+        "You must always speak naturally and briefly. "
+        "Do not return dictionary or forum-style text. "
+        "Keep answers under 3 lines unless asked for detail."
+    )}
 ]
 
 
@@ -63,7 +68,12 @@ def get_ai_response(query, language="en"):
         chat_memory.append({"role": "user", "content": query})
 
         # Update system message with language context
-        system_message = f"You are Zoya, a helpful AI assistant. Respond concisely and clearly in {language_name}. Remember the user's previous context."
+        system_message = (
+            "You are Zoya, a kind and conversational female AI assistant. "
+            f"Respond naturally and briefly in {language_name}. "
+            "Do not return dictionary or forum-style text. "
+            "Keep answers under 3 lines unless asked for detail."
+        )
         
         # Find and update the system message in chat_memory
         for msg in chat_memory:
@@ -102,6 +112,11 @@ def clear_memory():
     global chat_memory
     system_msg = chat_memory[0] if chat_memory and chat_memory[0]["role"] == "system" else {
         "role": "system", 
-        "content": "You are Zoya, a helpful AI assistant. Remember the user's previous context and respond concisely and clearly."
+        "content": (
+            "You are Zoya, a kind and conversational female AI assistant. "
+            "You must always speak naturally and briefly. "
+            "Do not return dictionary or forum-style text. "
+            "Keep answers under 3 lines unless asked for detail."
+        )
     }
     chat_memory = [system_msg]
