@@ -254,10 +254,11 @@ def start_voice_mode(selected_language, selected_language_name):
                 continue
                 
             # 🛑 Stop Command
-            if "stop" in query.lower():
+            if query.lower() == "stop":
                 print("🛑 Conversation reset.")
                 speak_text("Conversation reset. Let's start fresh!", selected_language)
                 clear_memory()
+                print("💬 You can ask me another question or say 'stop' anytime.\n")
                 continue
 
             # ❌ Exit Command
