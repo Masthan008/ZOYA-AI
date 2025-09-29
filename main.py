@@ -142,16 +142,6 @@ def start_text_mode(selected_language, selected_language_name):
     print(f"\n🧠 Zoya Mode: Text (AI) - {selected_language_name}")
     print("Type 'exit' to quit, or 'stop' to reset conversation.\n")
     
-    # 🧍 Personal Knowledge Base (Zoya's built-in facts)
-    personal_qa = {
-        "what is your name": "My name is Zoya, your personal AI assistant.",
-        "who are you": "I'm Zoya, your AI assistant built to help you.",
-        "who created you": "I was created by Masthan Valli — my brilliant developer.",
-        "who made you": "Masthan Valli built me using Python and AI.",
-        "who is masthan valli": "Masthan Valli is my creator — a talented developer.",
-        "who developed you": "Masthan Valli developed me with love and code.",
-    }
-    
     while True:
         try:
             # Reset stop flag at the beginning of each conversation
@@ -161,22 +151,30 @@ def start_text_mode(selected_language, selected_language_name):
             if not query:
                 continue
 
-            # 🛑 Exit
-            if query.lower() in ["exit", "quit"]:
+            # 🛑 Stop Command
+            if query.lower() == "stop":
+                print("🧠 Zoya: Conversation reset. Let's start fresh!")
+                speak_text("Conversation reset. Let's start fresh!", selected_language)
+                clear_memory()
+                print("💬 You can ask me another question or type 'stop' anytime.\n")
+                continue  # ✅ ask again
+
+            # ❌ Exit Command
+            if query.lower() in ["exit", "quit", "bye"]:
                 print("Zoya: Goodbye! 👋")
                 speak_text("Goodbye! Have a nice day!", selected_language)
                 break
 
-            # 🧠 Stop = reset conversation
-            if query.lower() == "stop":
-                print("🧠 Zoya: Conversation reset. Let's start fresh.")
-                speak_text("Conversation reset. Let's start fresh.", selected_language)
-                clear_memory()
-                continue
+            # 🧍 Personal Q&A
+            personal_qa = {
+                "what is your name": "My name is Zoya, your personal AI assistant.",
+                "who created you": "I was created by Masthan Valli — my brilliant developer.",
+                "who are you": "I'm Zoya, your friendly AI assistant built to help you.",
+                "who made you": "Masthan Valli built me using Python and AI.",
+                "who is masthan valli": "Masthan Valli is my creator — a talented developer.",
+                "who developed you": "Masthan Valli developed me with love and code."
+            }
 
-            print(f"You said: {query}")
-
-            # 🧍 Personal Knowledge Base (Zoya's built-in facts)
             query_lower = query.lower().strip(" ?")
             if query_lower in personal_qa:
                 response = personal_qa[query_lower]
@@ -220,6 +218,9 @@ def start_text_mode(selected_language, selected_language_name):
             print(f"Zoya: {clean_response}")
             speak_text(clean_response, selected_language)
             
+            # Friendly prompt after answer
+            print("💬 You can ask me another question or type 'stop' anytime.\n")
+            
             # Small delay to ensure speech finishes before next prompt
             time.sleep(0.5)
             
@@ -241,16 +242,6 @@ def start_voice_mode(selected_language, selected_language_name):
     print(f"\n🎙️ Zoya Mode: Voice (AI) - {selected_language_name}")
     print("Say 'exit' to quit, or 'stop' to reset conversation.\n")
     
-    # 🧍 Personal Knowledge Base (Zoya's built-in facts)
-    personal_qa = {
-        "what is your name": "My name is Zoya, your personal AI assistant.",
-        "who are you": "I'm Zoya, your AI assistant built to help you.",
-        "who created you": "I was created by Masthan Valli — my brilliant developer.",
-        "who made you": "Masthan Valli built me using Python and AI.",
-        "who is masthan valli": "Masthan Valli is my creator — a talented developer.",
-        "who developed you": "Masthan Valli developed me with love and code.",
-    }
-    
     while True:
         try:
             # Reset stop flag at the beginning of each conversation
@@ -262,22 +253,29 @@ def start_voice_mode(selected_language, selected_language_name):
             if not query:
                 continue
                 
-            # 🛑 Exit
-            if query.lower() in ["exit", "quit"]:
-                print("Zoya: Goodbye! 👋")
-                speak_text("Goodbye! Have a nice day!", selected_language)
-                break
-                
-            # 🧠 Stop = reset conversation
-            if query.lower() == "stop":
-                print("🧠 Zoya: Conversation reset. Let's start fresh.")
-                speak_text("Conversation reset. Let's start fresh.", selected_language)
+            # 🛑 Stop Command
+            if "stop" in query.lower():
+                print("🛑 Conversation reset.")
+                speak_text("Conversation reset. Let's start fresh!", selected_language)
                 clear_memory()
                 continue
 
-            print(f"You said: {query}")
+            # ❌ Exit Command
+            if query.lower() in ["exit", "quit", "bye"]:
+                print("Zoya: Goodbye! 👋")
+                speak_text("Goodbye! Have a nice day!", selected_language)
+                break
 
-            # 🧍 Personal Knowledge Base (Zoya's built-in facts)
+            # 🧍 Personal Q&A
+            personal_qa = {
+                "what is your name": "My name is Zoya, your personal AI assistant.",
+                "who created you": "I was created by Masthan Valli — my brilliant developer.",
+                "who are you": "I'm Zoya, your friendly AI assistant built to help you.",
+                "who made you": "Masthan Valli built me using Python and AI.",
+                "who is masthan valli": "Masthan Valli is my creator — a talented developer.",
+                "who developed you": "Masthan Valli developed me with love and code."
+            }
+
             query_lower = query.lower().strip(" ?")
             if query_lower in personal_qa:
                 response = personal_qa[query_lower]
@@ -360,6 +358,9 @@ def start_live_search_mode(selected_language, selected_language_name):
             # Log search
             if LOGGER_AVAILABLE:
                 log_interaction(query, result, mode="live", search_result=result)
+                
+            # Friendly prompt after answer
+            print("💬 You can search for another topic or type 'exit' to quit.\n")
                 
             # Small delay to ensure speech finishes before next prompt
             time.sleep(0.5)
